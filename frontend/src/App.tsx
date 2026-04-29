@@ -56,7 +56,14 @@ async function request(path: string, options: RequestInit = {}) {
 function useUser() {
   const [user, setUser] = useState<User | null>(() => {
     const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   });
   const logout = () => {
     localStorage.removeItem('token');
