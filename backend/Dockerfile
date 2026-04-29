@@ -1,16 +1,21 @@
 # Build stage
 FROM node:24-bookworm-slim as builder
 WORKDIR /app
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+ENV npm_config_build_from_source=true
 COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
+RUN npm prune --omit=dev
 
 # Production stage
 FROM node:24-bookworm-slim
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 # SQLite DB persistence
 VOLUME /app/data
