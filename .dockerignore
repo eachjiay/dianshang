@@ -1,0 +1,7 @@
+**/node_modules
+**/dist
+**/.git
+**/*.log
+backend/database.sqlite
+backend/data
+temp_docx
