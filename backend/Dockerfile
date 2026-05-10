@@ -1,22 +1,18 @@
 # Build stage
-FROM node:24-bookworm as builder
+FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
-ENV npm_config_build_from_source=true
-COPY package*.json ./
-RUN npm ci
+COPY pom.xml ./
+RUN mvn -B -ntp dependency:go-offline
 COPY . .
-RUN npm run build
-RUN npm prune --omit=dev
+RUN mvn -B -ntp package -DskipTests
 
 # Production stage
-FROM node:24-bookworm-slim
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/target/diquan-backend-1.0.0.jar ./app.jar
 # SQLite DB persistence
 VOLUME /app/data
 ENV PORT=5000
 ENV DB_PATH=/app/data/database.sqlite
 EXPOSE 5000
-CMD ["node", "dist/index.js"]
+CMD ["java", "-jar", "app.jar"]

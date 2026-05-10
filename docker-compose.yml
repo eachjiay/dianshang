@@ -11,7 +11,7 @@ services:
       - DB_PATH=/app/data/database.sqlite
       - JWT_SECRET=${JWT_SECRET:-please_change_this_secret}
     healthcheck:
-      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:5000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      test: ["CMD-SHELL", "bash -ec 'exec 3<>/dev/tcp/127.0.0.1/5000; printf \"GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3'"]
       interval: 10s
       timeout: 5s
       retries: 5

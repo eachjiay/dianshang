@@ -2,7 +2,7 @@
 
 ## 服务器准备
 
-安装 Docker 和 Docker Compose 后，开放阿里云安全组 80 端口。
+安装 Docker 和 Docker Compose，并开放服务器的 HTTP 访问端口。
 
 ## 部署
 
@@ -17,6 +17,8 @@ cp .env.example .env
 ```bash
 docker compose up -d --build
 ```
+
+后端现在是 Java/Spring Boot 服务，容器内使用 SQLite 文件 `/app/data/database.sqlite` 持久化数据。
 
 ## 验证
 
